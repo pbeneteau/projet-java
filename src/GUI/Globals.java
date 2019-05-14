@@ -5,34 +5,28 @@
  */
 package GUI;
 
-import notesElevesProfesseurs.Eleve;
-import notesElevesProfesseurs.Evaluation;
-import notesElevesProfesseurs.Matiere;
-import notesElevesProfesseurs.Promotion;
-import notesElevesProfesseurs.TriEleves;
-
+import notesElevesProfesseurs.*;
 
 
 /**
- *
  * @author franc
  */
 public class Globals {
-    
+
     // Ce fichier représente les variables globales
 
     /**
      * Promotion actuelle
      */
-    public static  Promotion promoActuelle = null;
+    public static Promotion promoActuelle = null;
 
     /**
-     * Eleve sélectionné 
+     * Eleve sélectionné
      */
     public static Eleve eleveSelectionne = null;
 
     /**
-     * Ordre de tri par défaut des élèves ( Vrai : tri , croissant Faux: tri décroissant) 
+     * Ordre de tri par défaut des élèves ( Vrai : tri , croissant Faux: tri décroissant)
      */
     public static boolean triCroissant = true;
 

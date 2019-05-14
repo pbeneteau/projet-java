@@ -6,14 +6,12 @@
 package GUI;
 
 /**
- *
  * @author franc
  */
 
 
 // Utilisé pour la classe ChoixProfMatiere
-public enum ChoixSelectionType 
-{
+public enum ChoixSelectionType {
 
     /**
      * On choisit une matiere pour notre évaluation

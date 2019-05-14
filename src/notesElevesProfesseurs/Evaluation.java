@@ -1,10 +1,27 @@
-
 package notesElevesProfesseurs;
 
 import java.util.Comparator;
-import java.util.HashSet;
 
-public class Evaluation implements Comparable<Evaluation>{
+public class Evaluation implements Comparable<Evaluation> {
+
+    private float note;
+    private Matiere mat = new Matiere();
+    private Eleve eleve = new Eleve();
+    private Professeur prof = new Professeur();
+    //Options bonus
+    private String evalType = "CE";
+    //Le coefficient pourra être utilisé dans une possible mise à jour
+    private int coeff = 1;
+
+    public Evaluation() {
+    }
+    public Evaluation(float note, Matiere mat, Eleve eleve, Professeur prof) {
+        this.note = note;
+        this.mat = mat;
+        this.eleve = eleve;
+        this.prof = prof;
+        mat.updateData(note);
+    }
 
     /**
      * @return the evalType
@@ -19,50 +36,22 @@ public class Evaluation implements Comparable<Evaluation>{
     public void setEvalType(String evalType) {
         this.evalType = evalType;
     }
-    private float note;
-    private Matiere mat = new Matiere();
-    private Eleve eleve = new Eleve();
-    private Professeur prof = new Professeur();
-    
-    //Options bonus
-    private String evalType = "CE"; 
-    //Le coefficient pourra être utilisé dans une possible mise à jour
-    private int coeff = 1;
-
-    public Evaluation(){};
-
-    
-    public Evaluation(float note, Matiere mat, Eleve eleve, Professeur prof){
-        this.note = note;
-        this.mat = mat;
-        this.eleve = eleve;
-        this.prof = prof;
-        mat.updateData(note);
-    }
 
     @Override
     public String toString() {
-        return "(("+eleve.getNom() +" Professeur: "+prof.toString()+" Matière : "+mat.getNom()+" "+note+"/20)";
+        return "((" + eleve.getNom() + " Professeur: " + prof.toString() + " Matière : " + mat.getNom() + " " + note + "/20)";
     }
 
     public Eleve getEleve() {
         return eleve;
     }
 
-    public float getNote() {
-        return note;
-    }
-
-    public Matiere getMat() {
-        return mat;
-    }
-
-    public Professeur getProf() {
-        return prof;
-    }
-
     public void setEleve(Eleve eleve) {
         this.eleve = eleve;
+    }
+
+    public float getNote() {
+        return note;
     }
 
     public void setNote(float note) {
@@ -70,8 +59,16 @@ public class Evaluation implements Comparable<Evaluation>{
         this.mat.updateData(note);
     }
 
+    public Matiere getMat() {
+        return mat;
+    }
+
     public void setMat(Matiere mat) {
         this.mat = mat;
+    }
+
+    public Professeur getProf() {
+        return prof;
     }
 
     public void setProf(Professeur prof) {

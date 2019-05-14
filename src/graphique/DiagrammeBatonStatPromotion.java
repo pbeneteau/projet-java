@@ -5,12 +5,6 @@
  */
 package graphique;
 
-import java.awt.BorderLayout;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.util.ArrayList;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
 import notesElevesProfesseurs.Promotion;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -20,51 +14,55 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.Range;
 import org.jfree.data.category.DefaultCategoryDataset;
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.util.ArrayList;
+
 /**
  * Cette classe génére un diagramme baton avec les différentes statistiques des promotions
  */
 public class DiagrammeBatonStatPromotion extends JFrame {
-    
-         private JPanel pan;
-    
-    
+
+    private JPanel pan;
+
+
     public DiagrammeBatonStatPromotion(ArrayList<Promotion> listePromos) // On envoie toutes les promotions en paramètre
     {
-         addWindowListener(new WindowAdapter(){
-           
+        addWindowListener(new WindowAdapter() {
+
             @Override
-            public void windowClosing(WindowEvent e)
-            {
+            public void windowClosing(WindowEvent e) {
                 dispose();
             }
         });
         pan = new JPanel(new BorderLayout());
         setContentPane(pan);
-        setSize(1000,700);
-        
+        setSize(1000, 700);
+
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-        
-        for(Promotion p : listePromos)
-        {
-            dataset.addValue(p.obtenirMinimumPromotion(), "Minimum", "Promo "+p.getNom());
-            dataset.addValue(p.obtenirMoyennePromotion(), "Moyenne", "Promo "+p.getNom());
-            dataset.addValue(p.obtenirMaximumPromotion(), "Maximum", "Promo "+p.getNom());
+
+        for (Promotion p : listePromos) {
+            dataset.addValue(p.obtenirMinimumPromotion(), "Minimum", "Promo " + p.getNom());
+            dataset.addValue(p.obtenirMoyennePromotion(), "Moyenne", "Promo " + p.getNom());
+            dataset.addValue(p.obtenirMaximumPromotion(), "Maximum", "Promo " + p.getNom());
         }
-        
-        
+
+
         JFreeChart res = ChartFactory.createBarChart("Statistiques des promotions : ", "",
-        "Note Obtenue", dataset, PlotOrientation.VERTICAL, true, true, false);
-        
+                "Note Obtenue", dataset, PlotOrientation.VERTICAL, true, true, false);
+
         CategoryPlot plot = (CategoryPlot) res.getPlot();
 
         org.jfree.chart.axis.ValueAxis rageAxis = plot.getRangeAxis();
         rageAxis.setRange(new Range(0, 20));
-        
-         ChartPanel cPan = new ChartPanel(res);
-    
+
+        ChartPanel cPan = new ChartPanel(res);
+
         pan.add(cPan);
         this.setLocationRelativeTo(null);
         this.setVisible(true);
-        
+
     }
 }

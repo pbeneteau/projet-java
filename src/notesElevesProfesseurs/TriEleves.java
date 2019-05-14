@@ -6,11 +6,10 @@
 package notesElevesProfesseurs;
 
 /**
- *
  * @author franc
  */
 public enum TriEleves {
-    identifiant ,
+    identifiant,
     prenom,
     nom,
     moyenne,
