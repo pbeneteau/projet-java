@@ -1,0 +1,27 @@
+﻿Identifiant;Note;Matière;Correcteur;Type;Coeff
+1;10;Mathématiques;Patrick Teller;CE;1
+1;20;Français;Victor Hugo;CE;1
+1;20;Histoire;Bob Dupuis;CE;1
+1;2.4;Géo;Ben Pat;CE
+2;3.0;Mathématiques;Patrick Teller;CE
+2;4.0;Histoire;Bob Dupuis;CE
+3;5;Mathématiques;Patrick Teller;CE;1
+4;20;Français;Victor Hugo;CE;1
+5;3;Français;Victor Hugo;CE;1
+9;4;Mathématiques;Patrick Teller;CE;1
+9;14;Français;Victor Hugo;CE;1
+9;11;Histoire;Bob Dupuis;CE;1
+12;9.0;Mathématiques;Patrick Teller;CE
+13;5;Français;Victor Hugo;CE;1
+15;12;Mathématiques;Patrick Teller;CE;1
+15;17;Histoire;Bob Dupuis;CE;1
+15;13;Géo;Ben Pat;CE;1
+16;17;Histoire;Bob Dupuis;CE;1
+16;3;Français;Victor Hugo;CE;1
+17;19;Mathématiques;Patrick Teller;CE;1
+18;15;Géo;Ben Pat;CE;1
+18;10;Français;Victor Hugo;CE;1
+18;5;Mathématiques;Patrick Teller;CE;1
+20;16;Français;Victor Hugo;CE;1
+20;14;Histoire;Bob Dupuis;CE;1
+2;18.1;Canaux Transmission;Patrick Teller;DE
