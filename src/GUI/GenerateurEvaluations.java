@@ -12,7 +12,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 /**
- * @author franc
+ * @author Paul BENETEAU & Marc-Antoine Bock
  */
 public class GenerateurEvaluations extends javax.swing.JFrame {
 
@@ -21,17 +21,11 @@ public class GenerateurEvaluations extends javax.swing.JFrame {
     /**
      * Evaluation en cours de modification, utilisé comme index/ marque page pour la modification d'une évaluation ( voir la fonction majEvaluations() )
      */
-    public static Evaluation evalEnCours = null;
-    public javax.swing.JTextField correcteurTF;
-    public javax.swing.JTextField matTF;
-    // Variables declaration - do not modify//GEN-BEGIN:variables
+    static Evaluation evalEnCours = null;
+    javax.swing.JTextField correcteurTF;
+    javax.swing.JTextField matTF;
     private javax.swing.JButton ajouterEvalB;
     private javax.swing.JTable evalsTable;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel mainLabel;
     private javax.swing.JButton modifEvalB;
     private javax.swing.JTextField noteTF;
@@ -40,10 +34,10 @@ public class GenerateurEvaluations extends javax.swing.JFrame {
     /**
      * Constructeur de la fenêtre graphique
      */
-    public GenerateurEvaluations() {
+    GenerateurEvaluations() {
         initComponents();
     }
-    GenerateurEvaluations(GenerateurEleve genEleve) {
+    GenerateurEvaluations(StudentGenerator genEleve) {
         initComponents();
     }
 
@@ -51,41 +45,21 @@ public class GenerateurEvaluations extends javax.swing.JFrame {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
-         */
         try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(GenerateurEvaluations.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(GenerateurEvaluations.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(GenerateurEvaluations.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            ChoixProfMatiere.initSwingUIManager();
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(GenerateurEvaluations.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-        //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new GenerateurEvaluations().setVisible(true);
-            }
-        });
+        java.awt.EventQueue.invokeLater(() -> new GenerateurEvaluations().setVisible(true));
     }
 
     /**
      *
      */
-    public void verifActivationBoutonAjoutEval() {
+    private void verifActivationBoutonAjoutEval() {
+
         if (!matTF.getText().isEmpty() && !noteTF.getText().isEmpty() && !typeTF.getText().isEmpty() && !correcteurTF.getText().isEmpty())
             ajouterEvalB.setEnabled(true);
         else
@@ -97,18 +71,18 @@ public class GenerateurEvaluations extends javax.swing.JFrame {
      *
      * @param e
      */
-    public void init(Eleve e) {
-        Globals.eleveSelectionne = e;
-        GenerateurEvaluationsOperations operations = new GenerateurEvaluationsOperations();
+    void init(Eleve e) {
+
+        Globals.selectedStudent = e;
+        EvaluationsGeneratorOperations operations = new EvaluationsGeneratorOperations();
         operations.afficherEvaluationsEleve(e, evalsTable, mainLabel);
         operations.ajouterDetectionClicLigne(evalsTable, suppEvalB, modifEvalB);
 
         // Affiche une fenetre de selection
-        operations.activerDetectionClicMatiereTF(matTF, this);
+        operations.enableSubjectClicDetectionTF(matTF, this);
         operations.activerDetectionClicProfTF(correcteurTF, this);
 
         operations.activerRemplissageChampsEval(evalsTable, noteTF, correcteurTF, matTF, typeTF);
-
 
         // Ajout d'un listener qui vérifie les zones de texte
         DocumentListener tfListener = new DocumentListener() {
@@ -133,15 +107,13 @@ public class GenerateurEvaluations extends javax.swing.JFrame {
         typeTF.getDocument().addDocumentListener(tfListener);
         noteTF.getDocument().addDocumentListener(tfListener);
 
-
         // Au moment de la fermeture de cette fenêtre, on pourra mettre à jour le texte du bouton
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                majTexteBouton(Globals.eleveSelectionne);
+                majTexteBouton(Globals.selectedStudent);
             }
         });
-
     }
 
     /**
@@ -149,17 +121,17 @@ public class GenerateurEvaluations extends javax.swing.JFrame {
      *
      * @param eleveSelectionne l'élève à mettre à jour
      */
-    public void majTexteBouton(Eleve eleveSelectionne) {
+    void majTexteBouton(Eleve eleveSelectionne) {
         System.out.println("Maj Texte Bouton...");
         Frame[] frames = Frame.getFrames();
         for (Frame f : frames) {
             System.out.println("Fenetre : " + f.getTitle() + "Type : " + f.getClass());
-            if (f.getClass() == ModifEleve.class || f.getClass() == GenerateurEleve.class) {
+            if (f.getClass() == EditStudent.class || f.getClass() == StudentGenerator.class) {
                 System.out.println("INSTANCE TROUVEE !");
-                if (f.getClass() == ModifEleve.class)
-                    ((ModifEleve) f).ouvrirGenEvalsB.setText("Ajouter des évaluations ( Nombre actuel : " + eleveSelectionne.getEvaluations().size() + ") ");
+                if (f.getClass() == EditStudent.class)
+                    ((EditStudent) f).openGenEvalsB.setText("Ajouter des évaluations ( Nombre actuel : " + eleveSelectionne.getEvaluations().size() + ") ");
                 else
-                    ((GenerateurEleve) f).ouvrirGenEvalsB.setText("Ajouter des évaluations ( Nombre actuel : " + eleveSelectionne.getEvaluations().size() + ") ");
+                    ((StudentGenerator) f).ouvrirGenEvalsB.setText("Ajouter des évaluations ( Nombre actuel : " + eleveSelectionne.getEvaluations().size() + ") ");
             }
         }
         System.out.println("FIN");
@@ -170,19 +142,18 @@ public class GenerateurEvaluations extends javax.swing.JFrame {
      * WARNING: Do NOT modify this code. The content of this method is always
      * regenerated by the Form Editor.
      */
-    @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jScrollPane1 = new javax.swing.JScrollPane();
+        JScrollPane jScrollPane1 = new JScrollPane();
         evalsTable = new javax.swing.JTable();
         ajouterEvalB = new javax.swing.JButton();
         suppEvalB = new javax.swing.JButton();
         mainLabel = new javax.swing.JLabel();
-        jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
-        jLabel5 = new javax.swing.JLabel();
+        JLabel jLabel1 = new JLabel();
+        JLabel jLabel2 = new JLabel();
+        JLabel jLabel3 = new JLabel();
+        JLabel jLabel5 = new JLabel();
         noteTF = new javax.swing.JTextField();
         typeTF = new javax.swing.JTextField();
         correcteurTF = new javax.swing.JTextField();
@@ -215,38 +186,30 @@ public class GenerateurEvaluations extends javax.swing.JFrame {
 
         ajouterEvalB.setText("Ajouter une évaluation");
         ajouterEvalB.setEnabled(false);
-        ajouterEvalB.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ajouterEvalBActionPerformed(evt);
-            }
-        });
+        ajouterEvalB.addActionListener(this::ajouterEvalBActionPerformed);
 
         suppEvalB.setText("Supprimer une évaluation");
         suppEvalB.setEnabled(false);
-        suppEvalB.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                suppEvalBActionPerformed(evt);
-            }
-        });
+        suppEvalB.addActionListener(this::suppEvalBActionPerformed);
 
-        mainLabel.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
+        mainLabel.setFont(new java.awt.Font("Tahoma", 0, 24));
         mainLabel.setText("Liste des évaluations pour l'élève : ?");
 
-        jLabel1.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
+        jLabel1.setFont(new java.awt.Font("Tahoma", 0, 24));
         jLabel1.setText("Matière");
 
-        jLabel2.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
+        jLabel2.setFont(new java.awt.Font("Tahoma", 0, 24));
         jLabel2.setText("Correcteur");
 
-        jLabel3.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
+        jLabel3.setFont(new java.awt.Font("Tahoma", 0, 24));
         jLabel3.setText("Note");
 
-        jLabel5.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
+        jLabel5.setFont(new java.awt.Font("Tahoma", 0, 24));
         jLabel5.setText("Type");
 
         noteTF.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                noteTFActionPerformed(evt);
+                markTFActionPerformed(evt);
             }
         });
 
@@ -254,7 +217,7 @@ public class GenerateurEvaluations extends javax.swing.JFrame {
         modifEvalB.setEnabled(false);
         modifEvalB.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                modifEvalBClick(evt);
+                editEvalBClick(evt);
             }
         });
 
@@ -342,7 +305,7 @@ public class GenerateurEvaluations extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void suppEvalBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_suppEvalBActionPerformed
+    private void suppEvalBActionPerformed(java.awt.event.ActionEvent evt) {
         if (Globals.evaluationSelectionnee == null) {
             System.out.println("Impossible de supprimer l'évaluation car aucune n'est selectionnée");
             return;
@@ -351,41 +314,43 @@ public class GenerateurEvaluations extends javax.swing.JFrame {
         suppEvalB.setEnabled(false);
         ((DefaultTableModel) evalsTable.getModel()).removeRow(evalsTable.getSelectedRow());
         evalsTable.clearSelection();
-        for (Evaluation eval : Globals.eleveSelectionne.getEvaluations().toArray(new Evaluation[Globals.eleveSelectionne.getEvaluations().size()]))
+        for (Evaluation eval : Globals.selectedStudent.getEvaluations().toArray(new Evaluation[Globals.selectedStudent.getEvaluations().size()]))
             if (eval == Globals.evaluationSelectionnee)
-                Globals.eleveSelectionne.getEvaluations().remove(eval);
+                Globals.selectedStudent.getEvaluations().remove(eval);
 
         CSV_Loader.supprimerEvaluationDansFichier(Globals.evaluationSelectionnee, CSV_Loader.EVALUATIONS_PATH);
-        // A TERMINER (ACTUALISATION EN TEMPS REEL)
-    }//GEN-LAST:event_suppEvalBActionPerformed
+    }
 
     /**
      * Gestion du code lorsque qu'on clique sur le bouton d'ajout d'une évaluation
      *
      * @param evt
      */
-    private void ajouterEvalBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ajouterEvalBActionPerformed
+    private void ajouterEvalBActionPerformed(java.awt.event.ActionEvent evt) {
         try {
             Float.parseFloat(noteTF.getText());
 
             // On vérifie que la note est un entier et qu'elle est comprise dans l'intervaalle [0;20]
             if (Float.parseFloat(noteTF.getText()) <= 20 && Float.parseFloat(noteTF.getText()) >= 0) {
-                Matiere mat = Matiere.trouverMatiere(matTF.getText(), Globals.promoActuelle.getNom());
+
+                Matiere mat = Matiere.trouverMatiere(matTF.getText(), Globals.currentPromotion.getNom());
                 if (mat == null) {
-                    mat = new Matiere(matTF.getText(), Globals.promoActuelle.getNom());
+                    mat = new Matiere(matTF.getText(), Globals.currentPromotion.getNom());
                     Matiere.listeMatieres.add(mat);
                 }
 
                 String[] nomPrenom = correcteurTF.getText().split(" ");
                 Professeur prof = Professeur.trouverProfesseur(nomPrenom[0], nomPrenom[1]);
+
                 if (prof == null) {
+
                     // Si le prof n'existe pas on le crée directement
                     prof = new Professeur(nomPrenom[0], nomPrenom[1]);
                     Professeur.getListeProfesseurs().add(prof);
                 }
                 // Création de l'évaluation à l'aide du contenu des zones de texte
-                Evaluation eval = new Evaluation(Float.parseFloat(noteTF.getText().replace(',', '.')), mat, Globals.eleveSelectionne, prof);
-                Globals.eleveSelectionne.getEvaluations().add(eval);
+                Evaluation eval = new Evaluation(Float.parseFloat(noteTF.getText().replace(',', '.')), mat, Globals.selectedStudent, prof);
+                Globals.selectedStudent.getEvaluations().add(eval);
                 eval.setEvalType(typeTF.getText());
 
                 // On ajoute l'évaluation à la table
@@ -397,56 +362,48 @@ public class GenerateurEvaluations extends javax.swing.JFrame {
                 noteTF.setBorder(new LineBorder(Color.red, 1));
                 JOptionPane.showMessageDialog(null, "Note invalide");
             }
-
         } catch (HeadlessException | NumberFormatException ex) {
+
             // Affichage d'un message d'erreur pour la note et zone de texte mise en rouge
             noteTF.setText("");
             noteTF.setBorder(new LineBorder(Color.red, 1));
             JOptionPane.showMessageDialog(null, "Format de la note incorrecte");
         }
-
-//        Globals.eleveSelectionne.getEvaluations().add(eval);
-//        eval.setEvalType(typeTF.getText());
-//        ((DefaultTableModel) evalsTable.getModel()).addRow(new Object[]{eval.getNote(),eval.getMat().getNom(),eval.getProf().getPrenom(),eval.getEvalType()});
-//        CSV_Loader.ajouterEvaluationDansFichier(eval,CSV_Loader.EVALUATIONS_PATH);
-//        System.out.println("Evaluation ajoutée dans la JTABLE !");
-//        Globals.evaluationSelectionnee = eval;
-
-    }//GEN-LAST:event_ajouterEvalBActionPerformed
+    }
 
     /**
      * Mise à jour dans le fichier CSV des évaluations lorsque le bouton de modification de l'évaluation actuellement sélectionnée est cliqué
      *
      * @param evt
      */
-    private void modifEvalBClick(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_modifEvalBClick
+    private void editEvalBClick(java.awt.event.ActionEvent evt) {
+
         if (Globals.evaluationSelectionnee == null)
             System.out.println("(!) Impossible de mettre à jour l'évaluation car NullReferenceException");
-        Globals.eleveSelectionne.getEvaluations().remove(Globals.evaluationSelectionnee);
-        majRapideEvaluation();
+        Globals.selectedStudent.getEvaluations().remove(Globals.evaluationSelectionnee);
+        updateEvaluation();
         CSV_Loader.majEvaluations(evalEnCours, Globals.evaluationSelectionnee, CSV_Loader.EVALUATIONS_PATH);
-        Globals.eleveSelectionne.add(Globals.evaluationSelectionnee);
-        GenerateurEvaluationsOperations operations = new GenerateurEvaluationsOperations();
-        operations.afficherEvaluationsEleve(Globals.eleveSelectionne, evalsTable, mainLabel);
-    }//GEN-LAST:event_modifEvalBClick
+        Globals.selectedStudent.add(Globals.evaluationSelectionnee);
+        EvaluationsGeneratorOperations operations = new EvaluationsGeneratorOperations();
+        operations.afficherEvaluationsEleve(Globals.selectedStudent, evalsTable, mainLabel);
+    }
 
-    private void noteTFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_noteTFActionPerformed
-    }//GEN-LAST:event_noteTFActionPerformed
-    // End of variables declaration//GEN-END:variables
+    private void markTFActionPerformed(java.awt.event.ActionEvent evt) {}
 
     /**
      * Permet de créer une évaluation à partir des zones de texte affichés sur la fenêtre, elle devient l'évaluation sélectionnée
      */
-    private void majRapideEvaluation() {
+    private void updateEvaluation() {
+
         Evaluation eval = new Evaluation();
         String[] prenomNom = correcteurTF.getText().split(" ");
         Professeur p = Professeur.trouverProfesseur(prenomNom[1], prenomNom[0]);
         if (p == null) p = new Professeur(prenomNom[1], prenomNom[0]);
         float note = Float.parseFloat(noteTF.getText().replace(',', '.'));
-        Matiere mat = Matiere.trouverMatiere(matTF.getText(), Globals.promoActuelle.getNom());
-        if (mat == null) mat = new Matiere(matTF.getText(), Globals.promoActuelle.getNom());
+        Matiere mat = Matiere.trouverMatiere(matTF.getText(), Globals.currentPromotion.getNom());
+        if (mat == null) mat = new Matiere(matTF.getText(), Globals.currentPromotion.getNom());
         String typeNote = typeTF.getText();
-        eval.setEleve(Globals.eleveSelectionne);
+        eval.setEleve(Globals.selectedStudent);
         eval.setEvalType(typeNote);
         eval.setMat(mat);
         eval.setNote(note);

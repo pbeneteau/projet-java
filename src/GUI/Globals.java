@@ -9,7 +9,7 @@ import notesElevesProfesseurs.*;
 
 
 /**
- * @author franc
+ * @author Paul BENETEAU & Marc-Antoine Bock
  */
 public class Globals {
 
@@ -18,17 +18,17 @@ public class Globals {
     /**
      * Promotion actuelle
      */
-    public static Promotion promoActuelle = null;
+    public static Promotion currentPromotion = null;
 
     /**
      * Eleve sélectionné
      */
-    public static Eleve eleveSelectionne = null;
+    public static Eleve selectedStudent = null;
 
     /**
      * Ordre de tri par défaut des élèves ( Vrai : tri , croissant Faux: tri décroissant)
      */
-    public static boolean triCroissant = true;
+    public static boolean ascendingSort = true;
 
     /**
      * Mode de tri par défaut des élèves d'une promotion

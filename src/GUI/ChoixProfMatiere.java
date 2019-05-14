@@ -13,7 +13,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 /**
- * @author franc
+ * @author Paul BENETEAU & Marc-Antoine Bock
  */
 public class ChoixProfMatiere extends javax.swing.JFrame {
 
@@ -21,23 +21,19 @@ public class ChoixProfMatiere extends javax.swing.JFrame {
      * Fenêtre d'affichage de choix ou création d'une matière ou d'un prof
      */
 
-    ChoixSelectionType typeActuel = null; // Permet de savoir si nous sommes par exemple dans une fenêtre de matieres ou de professeurs
-    String stringSelection = ""; //  Permet de savoir quelle ligne nous avons sélectionné, ou quelle prof, matiere... est en cours de création
-    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private TypeSelectionChoice typeActuel = null; // Permet de savoir si nous sommes par exemple dans une fenêtre de matieres ou de professeurs
+    private String stringSelection = ""; //  Permet de savoir quelle ligne nous avons sélectionné, ou quelle prof, matiere... est en cours de création
     private javax.swing.JLabel choixAlternatifL;
     private javax.swing.JLabel choixLabel;
     private javax.swing.JButton confirmerB;
     private javax.swing.JTextField creationTF;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JPanel panel;
     private javax.swing.JTable table;
 
 
     /**
      * Fenêtre d'affichage de choix ou création d'une matière ou d'un prof, on initialise graphiquement avec initComponents()
      */
-    public ChoixProfMatiere() {
+    ChoixProfMatiere() {
         initComponents();
     }
 
@@ -45,36 +41,22 @@ public class ChoixProfMatiere extends javax.swing.JFrame {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
-         */
         try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(ChoixProfMatiere.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(ChoixProfMatiere.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(ChoixProfMatiere.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            initSwingUIManager();
+        } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(ChoixProfMatiere.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-        //</editor-fold>
-        //</editor-fold>
-
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new ChoixProfMatiere().setVisible(true);
+        java.awt.EventQueue.invokeLater(() -> new ChoixProfMatiere().setVisible(true));
+    }
+
+    static void initSwingUIManager() throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException {
+        for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+            if ("Nimbus".equals(info.getName())) {
+                UIManager.setLookAndFeel(info.getClassName());
+                break;
             }
-        });
+        }
     }
 
     /**
@@ -83,11 +65,11 @@ public class ChoixProfMatiere extends javax.swing.JFrame {
      * @param type Le type d'initialisation à effectuer, cela produira des chargements différents et des affichages de texte différents
      * @param gen  La fenêtre permettant de gérer les évaluations de l'élève, on la garde en argument afin de pouvoir y accéder pour la mettre à jour plus tard
      */
-    public void init(ChoixSelectionType type, GenerateurEvaluations gen) {
+    void init(TypeSelectionChoice type, GenerateurEvaluations gen) {
         if (type != null) {
             typeActuel = type;
             majAffichage(type);
-            activerDetectionClicTable();
+            enableTableClicDetection();
             activerVerifCreationProf();
             activerVerifCreationMat(confirmerB, creationTF);
             retournerValeurQdFermeture(gen);
@@ -97,7 +79,7 @@ public class ChoixProfMatiere extends javax.swing.JFrame {
     }
 
     private void verifEspaceTF(JTextField tf, JButton buttonConfirmer) {
-        if (typeActuel == ChoixSelectionType.Professeur) {
+        if (typeActuel == TypeSelectionChoice.Professeur) {
             if (tf.getText().contains(" ")) {
                 buttonConfirmer.setText("Ajouter " + tf.getText());
                 stringSelection = tf.getText();
@@ -108,7 +90,7 @@ public class ChoixProfMatiere extends javax.swing.JFrame {
             }
         } else {
             activerBoutonSiTextePresent(tf, buttonConfirmer);
-            verifExistenceMatiereTF(creationTF, confirmerB);
+            checkSubjectExistenceTF(confirmerB);
         }
 
 
@@ -156,8 +138,9 @@ public class ChoixProfMatiere extends javax.swing.JFrame {
         }
     }
 
-    private void listerMatiere(JTable table) {
-        GestionnairePromosOperations op = new GestionnairePromosOperations();
+    private void listSubjects(JTable table) {
+
+        PromotionManagerOperations op = new PromotionManagerOperations();
         op.viderTable(table);
         DefaultTableModel model = new DefaultTableModel();
         model.addColumn("Nom de la matière");
@@ -167,11 +150,11 @@ public class ChoixProfMatiere extends javax.swing.JFrame {
             model.addRow(row);
         }
         table.setModel(model);
-
     }
 
-    private void listerProfs(JTable table) {
-        GestionnairePromosOperations op = new GestionnairePromosOperations();
+    private void listTeachers(JTable table) {
+
+        PromotionManagerOperations op = new PromotionManagerOperations();
         op.viderTable(table);
         DefaultTableModel model = new DefaultTableModel();
         model.addColumn("Nom");
@@ -184,11 +167,12 @@ public class ChoixProfMatiere extends javax.swing.JFrame {
         table.setModel(model);
     }
 
-    private void activerDetectionClicTable() {
+    private void enableTableClicDetection() {
+
         table.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent event) {
-                if (typeActuel == ChoixSelectionType.Matiere) {
+                if (typeActuel == TypeSelectionChoice.Matiere) {
                     stringSelection = (String) table.getValueAt(table.getSelectedRow(), 0);
                     choixLabel.setText("Matière sélectionnée : " + stringSelection);
                 } else {
@@ -207,16 +191,14 @@ public class ChoixProfMatiere extends javax.swing.JFrame {
      * WARNING: Do NOT modify this code. The content of this method is always
      * regenerated by the Form Editor.
      */
-    @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jPanel1 = new javax.swing.JPanel();
-        jScrollPane1 = new javax.swing.JScrollPane();
+        JPanel jPanel1 = new JPanel();
+        JScrollPane jScrollPane1 = new JScrollPane();
         table = new javax.swing.JTable();
         choixAlternatifL = new javax.swing.JLabel();
         choixLabel = new javax.swing.JLabel();
-        panel = new javax.swing.JPanel();
+        JPanel panel = new JPanel();
         creationTF = new javax.swing.JTextField();
         confirmerB = new javax.swing.JButton();
 
@@ -274,11 +256,7 @@ public class ChoixProfMatiere extends javax.swing.JFrame {
 
         confirmerB.setText("Confirmer");
         confirmerB.setEnabled(false);
-        confirmerB.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                confirmerBClick(evt);
-            }
-        });
+        confirmerB.addActionListener(evt -> confirmerBClick());
 
         javax.swing.GroupLayout panelLayout = new javax.swing.GroupLayout(panel);
         panel.setLayout(panelLayout);
@@ -332,16 +310,16 @@ public class ChoixProfMatiere extends javax.swing.JFrame {
         );
 
         pack();
-    }// </editor-fold>//GEN-END:initComponents
+    }
 
-    private void confirmerBClick(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_confirmerBClick
+    private void confirmerBClick() {
         // TODO add your handling code here:
         switch (typeActuel) {
             case Matiere:
                 ((DefaultTableModel) table.getModel()).addRow(new Object[]{stringSelection});
-                if (Matiere.trouverMatiere(stringSelection, Globals.promoActuelle.getNom()) == null) {
-                    Matiere.listeMatieres.add(new Matiere(stringSelection, Globals.promoActuelle.getNom()));
-                    listerMatiere(table);
+                if (Matiere.trouverMatiere(stringSelection, Globals.currentPromotion.getNom()) == null) {
+                    Matiere.listeMatieres.add(new Matiere(stringSelection, Globals.currentPromotion.getNom()));
+                    listSubjects(table);
                 }
                 break;
             case Professeur:
@@ -350,7 +328,7 @@ public class ChoixProfMatiere extends javax.swing.JFrame {
                     prenomNom = stringSelection.split(" ");
                     if (Professeur.trouverProfesseur(prenomNom[1], prenomNom[0]) == null) {
                         Professeur.getListeProfesseurs().add(new Professeur(prenomNom[1], prenomNom[0]));
-                        listerProfs(table);
+                        listTeachers(table);
                     }
 
                 } catch (Exception e) {
@@ -360,45 +338,30 @@ public class ChoixProfMatiere extends javax.swing.JFrame {
         }
 
         confirmerB.setEnabled(false);
-    }//GEN-LAST:event_confirmerBClick
-    // End of variables declaration//GEN-END:variables
-
-
-    //
+    }
 
     /**
      * Modifie deux labels de la fenêtre pour avoir un texte approprié selon le type passé en argument
      *
      * @param type Type d'élément à sélectionner qui détermine tout l'affichage de la fenêtre
      */
-    public void majAffichage(ChoixSelectionType type) {
+    public void majAffichage(TypeSelectionChoice type) {
         switch (type) {
             case Matiere:
                 choixLabel.setText("Choisissez votre matière");
                 choixAlternatifL.setText("Ou créez une nouvelle matière");
-                listerMatiere(table);
+                listSubjects(table);
                 break;
             case Professeur:
                 choixLabel.setText("Choisissez votre professeur");
                 choixAlternatifL.setText("Ou ajoutez un nouveau professeur");
-                listerProfs(table);
+                listTeachers(table);
                 break;
         }
     }
 
-    /**
-     * Affiche une fenêtre JFrame en fonction de l'enum ChoixSelectionType
-     *
-     * @param type le type de fenêtre que l'on souhaite afficher, par exemple une fenêtre de la liste des matieres, ou une fenêtre de la liste des professeurs
-     * @param gen  la fenêtre permettant de gérer les évaluations de l'élève, on la garde en argument afin de pouvoir y accéder pour la mettre à jour plus tard
-     */
-    public void montrerFenetreSelection(ChoixSelectionType type, GenerateurEvaluations gen) {
-        ChoixProfMatiere fenetreChoix = new ChoixProfMatiere();
-        fenetreChoix.setVisible(true);
-        fenetreChoix.init(type, gen);
-    }
-
     private void activerBoutonSiTextePresent(JTextField tf, JButton bouton) {
+
         System.out.println("verif texte present");
         if (!tf.getText().isEmpty()) {
             bouton.setText("Créer " + tf.getText());
@@ -411,6 +374,7 @@ public class ChoixProfMatiere extends javax.swing.JFrame {
 
 
     private void retournerValeurQdFermeture(GenerateurEvaluations gen) {
+
         this.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosed(WindowEvent event) {
@@ -427,8 +391,9 @@ public class ChoixProfMatiere extends javax.swing.JFrame {
         });
     }
 
-    private void verifExistenceMatiereTF(JTextField creationTF, JButton confirmerB) {
-        Matiere m = Matiere.trouverMatiere(stringSelection, Globals.promoActuelle.getNom());
+    private void checkSubjectExistenceTF(JButton confirmerB) {
+
+        Matiere m = Matiere.trouverMatiere(stringSelection, Globals.currentPromotion.getNom());
         if (m != null) {
             confirmerB.setText("Existe déjà");
             confirmerB.setEnabled(false);
